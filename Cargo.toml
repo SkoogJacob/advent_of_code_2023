@@ -1,5 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "day_1_trebuchet"
+    "day_1_trebuchet",
+    "day_2_cube_conundrum"
 ]
