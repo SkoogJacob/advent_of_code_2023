@@ -1,6 +1,4 @@
-use std::collections::hash_map::Keys;
 use std::collections::HashMap;
-use std::num::ParseIntError;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -82,7 +80,7 @@ impl FromStr for Game {
             (game_id, draw_info)
         };
 
-        let mut draws = draw_info.split(';')
+        let draws = draw_info.split(';')
             .map(|draw| Draw::from_str(draw))
             .filter(Result::is_ok);
         let draws = draws.map(Result::unwrap).collect::<Vec<Draw>>();
@@ -126,7 +124,22 @@ fn main() {
         let args: Vec<String> = args.collect();
         String::from(args.get(1).expect("no path to input given"))
     };
-    let input = std::fs::read_to_string(&input);
+    let input = std::fs::read_to_string(&input).expect("Unable to read file to string");
+    let bag = {
+        let mut bag = HashMap::new();
+        bag.insert(String::from("red"), 12);
+        bag.insert(String::from("green"), 13);
+        bag.insert(String::from("blue"), 14);
+        Draw::new(bag)
+    };
+    let games = input.lines()
+        .map(|l| Game::from_str(l))
+        .filter(Result::is_ok)
+        .map(Result::unwrap)
+        .filter(|g| g.impossible(&bag))
+        .map(|g| g.id())
+        .sum::<usize>();
+    println!("Sum of passed ids: {}", games);
 }
 
 #[cfg(test)]
